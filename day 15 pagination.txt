@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagination</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
+</head>
+<body>
+    <script src="script.js"></script>
+    <script src="https://app.zenclass.in/sheets/v1/js/zen/suite/bundle.js"></script>
+
+</body>
+</html>
+
+
+//////////////////
+/////dom /////////
+//////////////////
+
+let totalPages=20
+var currentPage=1
+let ChangePage
+var rows=5
+let array=''
+
+let div=tn('div')
+
+let titl=tn('h1')
+titl.setAttribute('id','title')
+titl.innerHTML='PAGINATION'
+div.append(titl)
+
+let desc=tn('p')
+desc.setAttribute('id','description')
+desc.innerHTML='This Webpage is about Pagination using DOM'
+div.append(desc)
+
+let divt=tn('div')
+divt.className='table-responsive'
+let TABLE=tn('table')      
+TABLE.setAttribute('required','')
+TABLE.className="table table-bordered"
+let THEAD=tn('thead')
+THEAD.className='table-dark'
+let tr=tn('tr')
+let td1=tn('th')
+td1.innerHTML='ID'
+let td2=tn('th')
+td2.innerHTML='Name'
+let td3=tn('th')
+td3.innerHTML='Email'
+
+let TBODY=tn('tbody')
+
+tr.append(td1,td2,td3)
+THEAD.append(tr)
+
+
+divt.append(TABLE)
+TABLE.append(THEAD,TBODY)
+
+div.append(titl,desc,divt)
+
+let div2=tn('div')
+div2.className='d-flex justify-content-center'
+div2.setAttribute('id','buttons')
+let nav=tn('nav')
+nav.setAttribute('aria-label','Page navigation example')
+let ul=tn('ul')
+ul.className='pagination justify-content-center'
+
+
+let li1=[]
+for ( var i=0;i<totalPages+2;i++)
+{
+    let pagintemp=`
+                        <li class="page-item">
+                        <a class="page-link" href="#">${i}</a>
+                        </li>
+                 `
+    ul.innerHTML+=pagintemp
+
+}
+
+ul.append(li1)
+nav.append(ul)
+div2.append(nav)
+
+document.body.append(div,div2)
+
+function tn(td){
+    let res=document.createElement(td)
+    return res
+}
+
+function nextPrev (){
+    let btn=document.getElementsByClassName('page-link')
+    for ( var i=0;i<totalPages+2;i++){
+        btn[i].addEventListener('click',clickedPage)
+
+        if (btn[i].innerHTML==="0"){
+            btn[i].innerHTML='<< prev'
+            btn[i].id='prev'
+        }
+        else if ( btn[i].innerHTML==='21'){
+            btn[i].innerHTML='next >>'
+            btn[i].id='next'
+        }
+        else if (btn[i].innerHTML>0 && btn[i].innerHTML<21){
+            btn[i].id=`${i}`
+        }
+    }
+}
+nextPrev()
+
+pageNunmberChange(1)
+
+function createTable (start, end){
+    let paginData= new XMLHttpRequest();
+    paginData.open('get','https://raw.githubusercontent.com/Rajavasanthan/jsondata/master/pagenation.json', true)
+    paginData.send()
+    paginData.onload=function (){
+    let pdata=JSON.parse(paginData.response)
+
+    for ( var i=start;i<end;i++){
+    //for ( var i=0;i<100;i++){
+    let templet=`
+                        <tr>
+                            <td>${pdata[i].id}</td>
+                            <td>${pdata[i].name}</td>
+                            <td>${pdata[i].email}</td>
+                        </tr>
+                `
+        console.log(templet)
+        TBODY.innerHTML+=templet 
+        }
+    }
+}
+
+function clickedPage(events){
+    
+    let res=events.target.id
+    
+    if (res==='prev'){
+        res=currentPage-1
+        pageNunmberChange(res) 
+    }
+    if (res==='next'){
+        res=currentPage+1
+        pageNunmberChange(res)
+    }
+    else{
+        pageNunmberChange(res)
+    }
+}
+
+function pageNunmberChange(num){
+
+    currentPage=num
+
+    if (num<1) num=1
+    if ( num>totalPages) num=totalPages
+
+    var startPoint= (num-1)*rows
+    var endPoint=startPoint+rows
+
+    createTable (startPoint, endPoint)
+
+    if (num===1){
+        document.getElementById('prev').style.visibility='hidden'
+    }
+    else {
+        document.getElementById('prev').style.visibility='visible'
+    }
+
+    if (num===totalPages){
+        document.getElementById('next').style.visibility='hidden'
+    }
+    else {
+        document.getElementById('next').style.visibility='visible'
+    }
+    
+}
+
+
+
+///////////
+///////////
+///////////
+
+*{
+  background-color: aqua;
+}
+
+h1,p{
+    text-align: center;
+    color: red;
+}
+
+li{
+    display: inline-flex ;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    
+}
+.table-responsive{
+  text-align: center;
+}
+th{
+  background-color: #369;
+}
+td{
+  color: black;
+  background-color:rgb(218, 109, 151)
+}
+tr{
+  color:black;
+}
+
+
+
+/* html, */
+/* body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  font-family: sans-serif;
+  padding: 25px;
+  background: #fff;
+  color: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+*, *::after, *::before {
+  box-sizing: border-box;
+}
+button {
+  background: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -ms-appearance: none;
+  -moz-appearance: none;
+  border: none;
+  cursor: pointer;
+}
+.page-btn {
+  background: #ddd;
+  color: #2c303a;
+  height: 35px;
+  border-radius: 2px;
+  padding: 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: background 0.3s ease;
+  margin: 0 2px
+}
+.page-btn:first-of-type {
+  margin-left: 0;
+}
+.page-btn:last-of-type {
+  margin-right: 0;
+}
+.page-btn:not([class$="-page"]) {
+  width: 35px;
+}
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+}
+.page-btn[class*="-page"] {
+  background: #ccc;
+  font-size: 0.6em;
+  font-weight: 700;
+}
+.page-btn.active {
+  background: #717790;
+  color: #fff;
+}
+.page-btn[disabled] {
+  opacity: 0.3;
+} */
+
